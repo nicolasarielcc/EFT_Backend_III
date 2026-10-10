@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentación — Banco XYZ · EFT Backend III</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });</script>
+<style>
+  :root { --azul:#0d3b66; --acento:#ee964b; --blanco:#fdfbf7; --texto:#263238; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:#0d3b66; font-family:"Segoe UI",Arial,sans-serif; color:var(--texto); }
+  .slide { display:none; width:100vw; height:100vh; padding:48px 7vw; background:var(--blanco); overflow:auto; }
+  .slide.active { display:block; }
+  h1 { color:var(--azul); font-size:44px; margin:0 0 8px; }
+  h2 { color:var(--azul); font-size:32px; border-bottom:4px solid var(--acento); padding-bottom:10px; }
+  h3 { color:var(--azul); font-size:20px; }
+  p,li { font-size:18px; line-height:1.6; }
+  .portada { background:linear-gradient(135deg,#0d3b66 0%,#145088 100%); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; }
+  .portada h1 { color:#fff; font-size:52px; }
+  .portada .sub { color:var(--acento); font-size:26px; font-weight:600; }
+  .portada .meta { margin-top:34px; font-size:18px; color:#cfe0ef; line-height:1.8; }
+  .kpi { display:flex; gap:22px; }
+  .kpi div { flex:1; background:#f0f4f9; border-radius:10px; padding:14px; text-align:center; border-top:5px solid var(--acento); }
+  .kpi b { font-size:26px; color:var(--azul); display:block; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+  .card { background:#f0f4f9; border-radius:10px; padding:16px; }
+  .mermaid { text-align:center; margin:10px 0; }
+  .mermaid svg { max-width:100%; height:auto; }
+  table { border-collapse:collapse; width:100%; font-size:16px; }
+  th { background:var(--azul); color:#fff; padding:8px 10px; }
+  td { border:1px solid #ddd; padding:8px 10px; }
+  tr:nth-child(even) td { background:#f0f4f9; }
+  .nav { position:fixed; inset:auto 24px 16px auto; color:var(--acento); font-size:14px; }
+  .bar { position:fixed; top:0; left:0; height:5px; background:var(--acento); width:5%; transition:width .2s; }
+  .foot { position:fixed; bottom:8px; left:16px; color:#9db6ce; font-size:12px; }
+  @media(max-width:900px){ .grid2{grid-template-columns:1fr;} h1{font-size:34px;} h2{font-size:26px;} }
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+
+<div class="slide portada active" id="s0">
+  <div>
+    <h1>Banco XYZ</h1>
+    <div class="sub">Desarrollo Backend Avanzado: Spring Cloud y Batch</div>
+    <p style="font-size:20px;color:#cfe0ef">Migración de un sistema legacy a una arquitectura de microservicios en la nube</p>
+    <div class="meta">
+      Evaluación Final Transversal (EFT) — Semana 9<br>
+      Nicolás Cavieres · Analista Programador · Prof. Alonso Castillo<br>
+      Backend III (PBY2203) · Duoc UC
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s1">
+  <h2>1. Resumen ejecutivo</h2>
+  <p>El Banco XYZ, institución con <b>+30 años</b> operando sobre <b>COBOL y Shell en mainframe</b>, moderniza su plataforma para ganar <b>escalabilidad, resiliencia y seguridad</b>.</p>
+  <div class="grid2">
+    <div class="card"><h3>Alcance</h3>
+      <ul>
+        <li>Migración de <b>3 procesos batch</b> a Spring Batch (copia legacy + reescritura).</li>
+        <li>Patrón <b>BFF</b> para Web, Móvil y Cajeros.</li>
+        <li><b>3 microservicios</b> resilientes y seguros con Spring Cloud.</li>
+        <li>Despliegue <b>Docker</b> y nube (AWS).</li>
+      </ul>
+    </div>
+    <div class="card"><h3>Características</h3>
+      <ul>
+        <li>OAuth 2.0 + HTTPS por canal.</li>
+        <li>Resilience4j (Circuit Breaker/Retry/Fallback).</li>
+        <li>Apache Kafka (eventos productor→consumidor).</li>
+        <li>Config Server + Eureka + API Gateway.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s2">
+  <h2>2. Del legacy a los microservicios</h2>
+  <div class="mermaid">
+flowchart LR
+    L[Mainframe COBOL + Shell<br/>Monolito · scripts batch] -->|migración| G[API Gateway]
+    G --> B1[ms-clientes]
+    G --> B2[ms-cuentas]
+    G --> B3[ms-pagos]
+    BATCH[Spring Batch<br/>3 procesos] --> DB[(MySQL)]
+    B1 & B2 & B3 --> DB
+    K[(Kafka)] -. eventos .-> B2 & N[notificaciones]
+    A[Auth Server OAuth2] --> G
+  </div>
+</div>
+
+<div class="slide" id="s3">
+  <h2>3. Arquitectura de la solución</h2>
+  <div class="mermaid">
+flowchart TB
+    SUB1[Cliente Web] -->|HTTPS :8082| W[BFF Web<br/>ROLE_WEB]
+    SUB2[Cliente Móvil] -->|HTTPS :8083| M[BFF Móvil<br/>ROLE_MOBILE]
+    SUB3[Cajero ATM] -->|HTTPS :8084| A[BFF Cajero<br/>ROLE_ATM]
+    W & M & A -- JWT --> GATE[API Gateway :8087]
+    GATE -. lb:// .-> CL[ms-clientes :8091]
+    GATE -. lb:// .-> CU[ms-cuentas :8092]
+    GATE -. lb:// .-> PG[ms-pagos :8093]
+    CL & CU & PG -. descubren .-> EU[Eureka :8761]
+    CL & CU & PG -- config --> CF[Config Server :8888]
+    BAT[banco-batch :8080] --> DB[(MySQL :3307)]
+    CL & CU & PG --> DB
+  </div>
+</div>
+
+<div class="slide" id="s4">
+  <h2>4. Migración batch (Spring Batch)</h2>
+  <div class="grid2">
+    <div>
+      <h3>3 procesos reescritos</h3>
+      <ul>
+        <li><b>Reporte de Transacciones Diarias</b> (+ anomalías y resumen).</li>
+        <li><b>Cálculo de Intereses</b> (cuentas ahorro/préstamo).</li>
+        <li><b>Estados de Cuenta Anuales</b>.</li>
+        <li>Copia <b>legacy</b> en <code>legacy/</code> para comparar.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Calidad de datos</h3>
+      <ul>
+        <li>Parser de <b>4 formatos de fecha</b> (el legacy descarta ~1600 registros).</li>
+        <li>Retry/Skip + deduplicación por clave única.</li>
+        <li>JobRepository → <b>re-ejecución</b> idempotente.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s5">
+  <h2>5. BFF por canal</h2>
+  <div class="mermaid">
+flowchart LR
+    A[Cliente Web] --> W[BFF Web<br/>datos completos + resumen]
+    B[Cliente Móvil] --> MO[BFF Móvil<br/>ligero · 5 mov.]
+    C[Cajero ATM] --> AT[BFF Cajero<br/>saldo + retiro]
+    W --> G[API Gateway]
+    MO --> G
+    AT --> G
+  </div>
+  <div class="kpi">
+    <div><b>4,5 KB</b>Web completo</div>
+    <div><b>3,15 KB</b>Móvil ligero</div>
+    <div><b>431 B</b>Saldo cajero</div>
+  </div>
+</div>
+
+<div class="slide" id="s6">
+  <h2>6. Microservicios con Spring Cloud</h2>
+  <div class="grid2">
+    <div class="card"><h3>Servicios de dominio</h3>
+      <ul>
+        <li><b>ms-clientes</b> — perfiles (CRUD).</li>
+        <li><b>ms-cuentas</b> — apertura, cierre, saldo, retiros.</li>
+        <li><b>ms-pagos</b> — pagos, transferencias, depósitos.</li>
+      </ul>
+    </div>
+    <div class="card"><h3>Spring Cloud</h3>
+      <ul>
+        <li><b>Config Server</b> — configuración central.</li>
+        <li><b>Eureka</b> — service discovery.</li>
+        <li><b>API Gateway</b> — enrutamiento y balanceo.</li>
+        <li><b>OAuth 2.0</b> — seguridad distribuida.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s7">
+  <h2>7. Resiliencia, seguridad y eventos</h2>
+  <div class="grid2">
+    <div class="card"><h3>Resilience4j</h3><p>Circuit Breaker + Retry + Fallback en los BFFs: ante la caída de un microservicio, el canal responde con un fallback controlado.</p></div>
+    <div class="card"><h3>OAuth 2.0</h3><p>Authorization Server emite JWT por canal; resource servers validan (401/403).</p></div>
+    <div class="card"><h3>Kafka</h3><p>Tópicos <code>clientes</code>, <code>retiros</code>, <code>transacciones</code>, <code>autenticaciones</code>.</p></div>
+    <div class="card"><h3>Consistencia</h3><p><code>ms-pagos</code> publica "transacciones completadas" → <code>ms-cuentas</code> actualiza saldo (consistencia eventual).</p></div>
+  </div>
+</div>
+
+<div class="slide" id="s8">
+  <h2>8. Resultados obtenidos</h2>
+  <div class="kpi">
+    <div><b>3</b>Jobs batch<br/>COMPLETED</div>
+    <div><b>3</b>Microservicios<br/>en Eureka</div>
+    <div><b>3</b>BFF HTTPS<br/>por canal</div>
+    <div><b>4</b>Tópicos Kafka<br/>activos</div>
+  </div>
+  <ul>
+    <li>Batch normaliza fechas y registra anomalías; retry/skip operativos.</li>
+    <li>Flujo auth → BFF → Gateway → microservicio verificado (401/403 OK).</li>
+    <li>Fallback de Resilience4j demostrado ante caída de <code>ms-cuentas</code>.</li>
+    <li>Eventos reproducidos en Kafka UI / consola y consumidos por notificaciones.</li>
+  </ul>
+</div>
+
+<div class="slide" id="s9">
+  <h2>9. Comparación con el sistema legacy</h2>
+  <table>
+    <tr><th>Aspecto</th><th>Legacy</th><th>Nuevo sistema</th></tr>
+    <tr><td>Arquitectura</td><td>Monolítica (mainframe)</td><td>Microservicios desacoplados</td></tr>
+    <tr><td>Escalabilidad</td><td>Limitada</td><td>Horizontal (Docker/Eureka/ALB)</td></tr>
+    <tr><td>Tolerancia a fallos</td><td>Frágil</td><td>Resilience4j + reinicio</td></tr>
+    <tr><td>Procesos batch</td><td>Descarta fechas no ISO</td><td>4 formatos + retry/skip + paralelismo</td></tr>
+    <tr><td>Frontends</td><td>Monolito único</td><td>BFF por canal</td></tr>
+    <tr><td>Seguridad</td><td>Centralizada</td><td>OAuth 2.0 distribuido + HTTPS</td></tr>
+    <tr><td>Integración</td><td>Acoplada</td><td>Eventos Kafka</td></tr>
+  </table>
+</div>
+
+<div class="slide" id="s10">
+  <h2>10. Desafíos y soluciones</h2>
+  <table>
+    <tr><th>Desafío</th><th>Solución</th></tr>
+    <tr><td>Datos legacy sucios</td><td>Validación + retry/skip + deduplicación en BD</td></tr>
+    <tr><td>Fechas multi-formato descartadas</td><td>Parser de 4 formatos en el ItemProcessor</td></tr>
+    <tr><td>Consistencia distribuida</td><td>Eventos Kafka (consistencia eventual)</td></tr>
+    <tr><td>Fallos de servicios externos</td><td>Resilience4j (Circuit Breaker/Retry/Fallback)</td></tr>
+    <tr><td>Seguridad distribuida</td><td>OAuth 2.0 + autorización por canal</td></tr>
+  </table>
+</div>
+
+<div class="slide" id="s11">
+  <h2>11. Propuestas de mejora y próximos pasos</h2>
+  <ul>
+    <li><b>Observabilidad:</b> OpenTelemetry y trazabilidad distribuida (tracing) entre BFFs y microservicios.</li>
+    <li><b>CI/CD:</b> GitHub Actions → build → tests → ECR → ECS.</li>
+    <li><b>Seguridad:</b> rotación de claves JWT, mTLS, Secrets Manager.</li>
+    <li><b>Mensajería en nube:</b> Kafka en EC2/MSK con los microservicios conectados al broker remoto.</li>
+    <li><b>Saga:</b> transacciones distribuidas con compensación.</li>
+  </ul>
+</div>
+
+<div class="slide" id="s12">
+  <h2>Gracias</h2>
+  <p style="font-size:22px">Demostración en vivo: <code style="font-size:22px">docker compose up --build</code></p>
+  <p>Código, seguimiento de instrucciones y evidencias según <code>instrucciones.md</code>.</p>
+  <p><b>Banco XYZ · Desarrollo Backend Avanzado con Spring Cloud y Batch · EFT 2026</b></p>
+</div>
+
+<div class="nav" id="nav">→ flechas / espacio</div>
+<div class="foot" id="foot"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+  const bar = document.getElementById('bar');
+  const foot = document.getElementById('foot');
+  function show(i){
+    cur = Math.max(0, Math.min(slides.length-1, i));
+    slides.forEach((s,k)=>s.classList.toggle('active', k===cur));
+    bar.style.width = ((cur+1)/slides.length*100)+'%';
+    foot.textContent = 'Banco XYZ · EFT Backend III — '+(cur+1)+' / '+slides.length;
+  }
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) show(cur+1);
+    else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) show(cur-1);
+    else if(e.key==='Home') show(0);
+    else if(e.key==='End') show(slides.length-1);
+  });
+  let tx0=null;
+  document.addEventListener('touchstart', e=>tx0=e.touches[0].clientX);
+  document.addEventListener('touchend', e=>{
+    if(!tx0) return;
+    const dx=e.changedTouches[0].clientX - tx0;
+    if(Math.abs(dx)>50) show(cur + (dx<0?1:-1));
+    tx0=null;
+  });
+  show(0);
+</script>
+</body>
+</html>

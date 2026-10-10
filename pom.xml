@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>cl.duoc.banco.bff</groupId>
+    <artifactId>banco-bff-parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>banco-xyz-eft</name>
+    <description>
+        Banco XYZ - Evaluacion Final Transversal (EFT) "Desarrollo Backend Avanzado:
+        Spring Cloud y Batch". Migracion de procesos batch (Spring Batch) +
+        patron Backend for Frontend (BFF) + microservicios resilientes y seguros
+        con Spring Cloud (Config Server, Eureka, Gateway, OAuth 2.0, Resilience4j,
+        Apache Kafka) y despliegue en la nube (Docker + docker-compose).
+    </description>
+
+    <modules>
+        <module>common</module>
+        <module>config-server</module>
+        <module>eureka-server</module>
+        <module>api-gateway</module>
+        <module>auth-server</module>
+        <module>ms-clientes</module>
+        <module>ms-cuentas</module>
+        <module>ms-pagos</module>
+        <module>banco-batch</module>
+        <module>bff-web</module>
+        <module>bff-mobile</module>
+        <module>bff-atm</module>
+        <module>notificaciones-service</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>21</maven.compiler.release>
+        <spring-cloud.version>2023.0.4</spring-cloud.version>
+        <resilience4j.version>2.2.0</resilience4j.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-bom</artifactId>
+                <version>${resilience4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>cl.duoc.banco.bff</groupId>
+                <artifactId>banco-bff-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

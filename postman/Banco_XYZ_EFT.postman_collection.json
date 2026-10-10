@@ -1,0 +1,707 @@
+{
+  "info": {
+    "name": "Banco XYZ - EFT (Backend III)",
+    "_postman_id": "b3c8e9a1-0000-4a00-8e00-00e0b00b00x1",
+    "description": "Evaluación Final Transversal. Docker Compose + HTTPS autofirmado (SSL OFF).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_batch",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "base_gw",
+      "value": "http://localhost:8087"
+    },
+    {
+      "key": "base_notif",
+      "value": "http://localhost:8085"
+    },
+    {
+      "key": "bff_web",
+      "value": "https://localhost:8082"
+    },
+    {
+      "key": "bff_mobile",
+      "value": "https://localhost:8083"
+    },
+    {
+      "key": "bff_atm",
+      "value": "https://localhost:8084"
+    },
+    {
+      "key": "web_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "mobile_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "atm_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0 - Batch (Spring Batch)",
+      "item": [
+        {
+          "name": "Procesar todos los jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_batch}}/api/batch/procesar"
+            },
+            "description": "Ejecuta reporte-transacciones + calculo-intereses + estados-anuales."
+          }
+        },
+        {
+          "name": "Job Reporte de Transacciones Diarias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_batch}}/api/batch/reporte-transacciones"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Job Cálculo de Intereses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_batch}}/api/batch/calculo-intereses"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Job Estados de Cuenta Anuales",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_batch}}/api/batch/estados-anuales"
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "1 - Autenticación (OAuth 2.0 por canal)",
+      "item": [
+        {
+          "name": "Login WEB → token (ROLE_WEB)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_web}}/api/auth/login"
+            },
+            "description": "SSL OFF en Postman.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('web_token', j.accessToken);",
+                  "console.log('web_token: ' + j.accessToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login MÓVIL → token (ROLE_MOBILE)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_mobile}}/api/auth/login"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('mobile_token', j.accessToken);",
+                  "console.log('mobile_token: ' + j.accessToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login CAJERO → token (ROLE_ATM)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_atm}}/api/auth/login"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('atm_token', j.accessToken);",
+                  "console.log('atm_token: ' + j.accessToken);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 - Microservicios (vía API Gateway)",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/clientes"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/clientes"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nombre\":\"Ana Torres\",\"email\":\"ana@example.com\",\"telefono\":\"+56 9 1234 5678\",\"direccion\":\"Santiago\"}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cliente por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/clientes/1"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar cuentas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/cuentas"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Saldo cuenta 101",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/cuentas/101/saldo"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{atm_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Apertura de cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/cuentas"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cuentaId\":900,\"nombre\":\"Nueva Cuenta\",\"saldo\":0,\"edad\":30,\"tipo\":\"ahorro\"}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Depósito cuenta 101",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/pagos/depositos"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cuentaId\":101,\"tipo\":\"deposito\",\"monto\":500,\"descripcion\":\"Depósito sucursal\"}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Transacciones cuenta 101",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/transacciones/cuenta/101"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Movimientos (libro mayor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/movimientos"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - BFF por canal",
+      "item": [
+        {
+          "name": "WEB: listar cuentas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_web}}/api/web/cuentas"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "WEB: detalle cuenta 101",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_web}}/api/web/cuentas/101"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "MÓVIL: listar cuentas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_mobile}}/api/mobile/cuentas"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mobile_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "MÓVIL: detalle cuenta 101",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_mobile}}/api/mobile/cuentas/101"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mobile_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "CAJERO: saldo 101",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_atm}}/api/atm/cuentas/101/saldo"
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{atm_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "CAJERO: retiro 101",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{bff_atm}}/api/atm/cuentas/101/retiros"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"monto\":100}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{atm_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Notificaciones (Kafka consumer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_notif}}/api/notificaciones"
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Seguridad (401 / 403)",
+      "item": [
+        {
+          "name": "Sin token → 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/cuentas"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Retiro con token WEB → 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_gw}}/api/cuentas/101/retiros"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"monto\":100}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{web_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

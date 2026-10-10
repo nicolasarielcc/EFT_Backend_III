@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Técnico — Banco XYZ · EFT Backend III</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+</script>
+<style>
+  :root { --azul:#0d3b66; --acento:#ee964b; --gris:#f4f4f9; --texto:#222; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--texto); margin:0; background:#eef1f5; line-height:1.55; }
+  .page { max-width: 900px; margin: 24px auto; background:#fff; padding: 48px 56px; box-shadow:0 0 20px rgba(0,0,0,.12); }
+  /* Portada */
+  .cover { border-bottom: 6px solid var(--acento); padding-bottom: 28px; margin-bottom: 28px; }
+  .cover h1 { color: var(--azul); font-size: 26px; margin: 6px 0 4px; }
+  .cover h2 { color: var(--acento); font-size: 18px; font-weight:600; margin:0 0 18px; }
+  .portada-tabla { border-collapse: collapse; width: 100%; }
+  .portada-tabla td { border:1px solid #ddd; padding:8px 12px; font-size:14px; }
+  .portada-tabla td:first-child { width: 30%; background: var(--gris); font-weight:600; }
+  h2.sec { color: var(--azul); border-bottom: 3px solid var(--acento); padding-bottom:6px; margin-top:36px; }
+  h3 { color: var(--azul); }
+  table.datos { border-collapse: collapse; width:100%; font-size:13.5px; margin:12px 0; }
+  table.datos th { background: var(--azul); color:#fff; padding:7px 10px; text-align:left; }
+  table.datos td { border:1px solid #ddd; padding:7px 10px; }
+  table.datos tr:nth-child(even) td { background: var(--gris); }
+  .mermaid { text-align:center; margin: 18px 0; }
+  .mermaid svg { max-width:100%; height:auto; }
+  code { background:#eef; padding:1px 5px; border-radius:4px; font-size:13px; font-family:Consolas,monospace; }
+  pre { background:#1e1e2e; color:#e6e6e6; padding:12px 14px; border-radius:6px; overflow:auto; font-size:12.5px; }
+  ul li, ol li { margin:4px 0; }
+  .toc { background: var(--gris); padding: 14px 18px; border-radius: 6px; }
+  .toc ul { columns:2; list-style:none; padding:0; margin:0; }
+  .toc a { color: var(--azul); text-decoration:none; font-size:13.5px; }
+  .toc a:hover { text-decoration:underline; color: var(--acento); }
+  @media print {
+    body { background:#fff; }
+    .page { box-shadow:none; margin:0; max-width:100%; padding:20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ================= PORTADA ================= -->
+  <div class="cover">
+    <h1>Informe Técnico — Desarrollo Backend Avanzado: Spring Cloud y Batch</h1>
+    <h2>Evaluación Final Transversal (EFT) — Semana 9 · Backend III (PBY2203)</h2>
+    <table class="portada-tabla">
+      <tr><td>Nombre</td><td>Nicolás Cavieres</td></tr>
+      <tr><td>Carrera</td><td>Analista Programador</td></tr>
+      <tr><td>Fecha</td><td>09/10/2026</td></tr>
+      <tr><td>Profesor</td><td>Alonso Castillo</td></tr>
+      <tr><td>Asignatura</td><td>Backend III (PBY2203)</td></tr>
+      <tr><td>Proyecto</td><td>Banco XYZ — modernización de sistema legacy a microservicios en la nube</td></tr>
+    </table>
+  </div>
+
+  <div class="toc">
+    <ul>
+      <li><a href="#resumen">1. Resumen</a></li>
+      <li><a href="#objetivos">2. Objetivos y alcance</a></li>
+      <li><a href="#req">3. Requerimientos clave y decisiones</a></li>
+      <li><a href="#arquitectura">4. Diagrama de arquitectura</a></li>
+      <li><a href="#componentes">5. Componentes desarrollados</a></li>
+      <li><a href="#diagrama-comp">6. Diagrama de componentes e integración</a></li>
+      <li><a href="#casos">7. Casos de uso</a></li>
+      <li><a href="#integracion">8. Integración entre componentes</a></li>
+      <li><a href="#seguridad">9. Seguridad</a></li>
+      <li><a href="#resiliencia">10. Resiliencia y mensajería</a></li>
+      <li><a href="#despliegue">11. Despliegue (Docker y nube)</a></li>
+      <li><a href="#resultados">12. Resultados</a></li>
+      <li><a href="#comparacion">13. Comparación con el legacy</a></li>
+      <li><a href="#desafios">14. Desafíos y soluciones</a></li>
+      <li><a href="#mejoras">15. Mejoras y próximos pasos</a></li>
+    </ul>
+  </div>
+
+  <!-- ================= 1. RESUMEN ================= -->
+  <h2 class="sec" id="resumen">1. Resumen</h2>
+  <p>El <b>Banco XYZ</b> migra su plataforma legacy (COBOL + scripts Shell sobre mainframe) hacia una <b>arquitectura de microservicios en la nube</b>. La solución implementa la migración de los procesos batch con <b>Spring Batch</b>, el patrón <b>Backend for Frontend (BFF)</b> para tres canales y microservicios resilientes y seguros con <b>Spring Cloud</b> (Config Server, Eureka, API Gateway, OAuth 2.0, Resilience4j y Apache Kafka), desplegados con <b>Docker</b> y preparados para <b>AWS</b>.</p>
+
+  <h2 class="sec" id="objetivos">2. Objetivos y alcance</h2>
+  <ul>
+    <li>Reescribir los procesos batch legacy con Spring Batch (3 jobs sobre <code>fin_legacy_data</code>), con copia legacy + reescritura.</li>
+    <li>Desacoplar los frontends mediante BFFs independientes por canal (Web, Móvil, Cajeros).</li>
+    <li>Dividir el monolito en 3 microservicios (clientes, cuentas, pagos) resilientes y seguros.</li>
+    <li>Desplegar en la nube (AWS) con Docker, escalabilidad horizontal y mensajería asíncrona.</li>
+  </ul>
+
+  <!-- ================= 3. REQUERIMIENTOS ================= -->
+  <h2 class="sec" id="req">3. Requerimientos clave del negocio y decisiones de arquitectura</h2>
+  <h3>3.1 Requerimientos clave</h3>
+  <ol>
+    <li><b>Escalabilidad</b> — el sistema debe crecer horizontalmente ante mayor demanda.</li>
+    <li><b>Resiliencia</b> — un fallo en un módulo no debe tumbar todo el sistema.</li>
+    <li><b>Seguridad</b> — protección de datos y servicios en un entorno distribuido.</li>
+  </ol>
+  <table class="datos">
+    <tr><th>Decisión</th><th>Justificación</th></tr>
+    <tr><td>Microservicios (clientes, cuentas, pagos)</td><td>Aislamiento de fallos, despliegue independiente y escalado por servicio.</td></tr>
+    <tr><td>Spring Batch + copia legacy</td><td>Reescribe los jobs legacy con retry/skip, normalización de fechas, paralelismo y re-ejecución, manteniendo equivalencia de resultados.</td></tr>
+    <tr><td>BFF por canal</td><td>Optimiza respuestas y seguridad por frontend (web completo, móvil ligero, ATM crítico).</td></tr>
+    <tr><td>Eureka + API Gateway</td><td>Detección dinámica de servicios y enrutamiento/balanceo centralizado.</td></tr>
+    <tr><td>OAuth 2.0</td><td>Autenticación/autorización delegada y distribuida con tokens JWT.</td></tr>
+    <tr><td>Resilience4j</td><td>Circuit Breaker / Retry / Fallback en el consumidor.</td></tr>
+    <tr><td>Kafka</td><td>Arquitectura orientada a eventos (desacoplamiento y consistencia eventual).</td></tr>
+    <tr><td>Docker + AWS</td><td>Portabilidad: mismas imágenes en local y nube (RDS, ECS, ALB, MSK).</td></tr>
+  </table>
+
+  <!-- ================= 4. ARQUITECTURA ================= -->
+  <h2 class="sec" id="arquitectura">4. Diagrama de arquitectura</h2>
+  <div class="mermaid">
+flowchart TB
+    subgraph Clientes
+      W[Cliente Web]
+      M[Cliente Móvil]
+      A[Cajero ATM]
+    end
+    W -- HTTPS :8082 --> B1[BFF Web<br/>ROLE_WEB]
+    M -- HTTPS :8083 --> B2[BFF Móvil<br/>ROLE_MOBILE]
+    A -- HTTPS :8084 --> B3[BFF Cajero<br/>ROLE_ATM]
+    B1 & B2 & B3 -- JWT relay --> G[API Gateway :8087]
+    G -. lb:// .-> C[MS-Clientes :8091]
+    G -. lb:// .-> CU[MS-Cuentas :8092]
+    G -. lb:// .-> P[MS-Pagos :8093]
+    C & CU & P -. registran .-> E[Eureka :8761]
+    C & CU & P -- leen config --> CF[Config Server :8888]
+    CU -- consume "transacciones" --> K[(Kafka :29092)]
+    P -- produce "transacciones" --> K
+    AUTH[Auth Server :9000] -- JWT --> G
+    B1 & B2 & B3 -- token --> AUTH
+    K -- "retiros" --> N[Notificaciones :8085]
+    BATCH[banco-batch :8080] -- limpia --> DB[(MySQL :3307)]
+    C & CU & P -- JPA --> DB
+    D[fin_legacy_data] --> BATCH
+  </div>
+
+  <!-- ================= 5. COMPONENTES ================= -->
+  <h2 class="sec" id="componentes">5. Componentes desarrollados</h2>
+  <table class="datos">
+    <tr><th>Componente</th><th>Puerto</th><th>Responsabilidad</th></tr>
+    <tr><td><code>banco-batch</code></td><td>8080</td><td>3 jobs Spring Batch sobre <code>fin_legacy_data</code>: transacciones diarias (+ anomalías/resumen), intereses y estados anuales. Retry/skip, idempotencia.</td></tr>
+    <tr><td><code>ms-clientes</code></td><td>8091</td><td>CRUD de clientes (perfiles). Eventos <code>clientes</code> (Kafka).</td></tr>
+    <tr><td><code>ms-cuentas</code></td><td>8092</td><td>Apertura, cierre, mantenimiento, saldo y retiros. Eventos <code>retiros</code> y consumidor de <code>transacciones</code>.</td></tr>
+    <tr><td><code>ms-pagos</code></td><td>8093</td><td>Pagos, transferencias y depósitos. Evento <code>transacciones</code> (transacción completada).</td></tr>
+    <tr><td><code>bff-web / bff-mobile / bff-atm</code></td><td>8082-8084</td><td>BFF por canal (datos completos / ligeros / críticos). HTTPS + OAuth2 + Resilience4j.</td></tr>
+    <tr><td><code>api-gateway</code></td><td>8087</td><td>Enrutamiento y balanceo de carga (<code>lb://</code>) con Eureka.</td></tr>
+    <tr><td><code>eureka-server</code></td><td>8761</td><td>Service discovery.</td></tr>
+    <tr><td><code>config-server</code></td><td>8888</td><td>Configuración centralizada.</td></tr>
+    <tr><td><code>auth-server</code></td><td>9000</td><td>Authorization Server OAuth 2.0 (JWT RS256, client_credentials por canal).</td></tr>
+    <tr><td><code>notificaciones-service</code></td><td>8085</td><td>Consumidor Kafka (<code>retiros</code>).</td></tr>
+    <tr><td><code>legacy/</code></td><td>—</td><td>Copia de los procesos legacy (Java plano) para comparación.</td></tr>
+  </table>
+
+  <!-- ================= 6. DIAGRAMA DE COMPONENTES ================= -->
+  <h2 class="sec" id="diagrama-comp">6. Diagrama de componentes e integración</h2>
+  <p>Integración de los componentes desarrollados y su comunicación (síncrona por Gateway y asíncrona por Kafka).</p>
+  <div class="mermaid">
+flowchart LR
+    subgraph Canales
+      W[Web] --> B1[bff-web]
+      M[Móvil] --> B2[bff-mobile]
+      A[Cajero] --> B3[bff-atm]
+    end
+    B1 --> GW[API Gateway]
+    B2 --> GW
+    B3 --> GW
+    GW --> CL[ms-clientes]
+    GW --> CU[ms-cuentas]
+    GW --> PG[ms-pagos]
+    CL --> DB[(MySQL)]
+    CU --> DB
+    PG --> DB
+    PG -. produce transacciones .-> K[(Kafka)]
+    CU -. produce retiros .-> K
+    CL -. produce clientes .-> K
+    AUTH[Auth Server] -. produce autenticaciones .-> K
+    K -. retiros a notificaciones .-> NOTI[notificaciones-service]
+    K -. transacciones a cuentas .-> CU
+    B1 & B2 & B3 --> AUTH
+    CL & CU & PG --> EU[Eureka]
+    GW --> EU
+  </div>
+
+  <!-- ================= 7. CASOS DE USO ================= -->
+  <h2 class="sec" id="casos">7. Casos de uso</h2>
+  <div class="mermaid">
+flowchart TD
+    UC[Banco XYZ] --> U1[Consultar saldo (Cajero)]
+    UC --> U2[Realizar retiro (Cajero)]
+    UC --> U3[Consultar cuenta y resumen (Web)]
+    UC --> U4[Ver cuentas ligero (Móvil)]
+    UC --> U5[Registrar cliente (Web)]
+    UC --> U6[Realizar depósito (Web)]
+    UC --> U7[Migrar datos legacy (Batch)]
+  </div>
+  <table class="datos">
+    <tr><th>Caso</th><th>Flujo</th></tr>
+    <tr><td>Consultar saldo</td><td>Login (token ATM) → BFF ATM → Gateway → <code>ms-cuentas</code> → saldo.</td></tr>
+    <tr><td>Realizar retiro</td><td>BFF ATM → <code>ms-cuentas</code> → valida saldo → actualiza → evento <code>retiros</code> → notificaciones.</td></tr>
+    <tr><td>Consultar cuenta</td><td>BFF Web → Gateway → <code>ms-cuentas</code> + <code>ms-pagos</code> → detalle + resumen.</td></tr>
+    <tr><td>Ver cuentas ligero</td><td>BFF Móvil → Gateway → <code>ms-cuentas</code> → datos esenciales.</td></tr>
+    <tr><td>Registrar cliente</td><td><code>ms-clientes</code> (ROLE_WEB) → alta → evento <code>clientes</code>.</td></tr>
+    <tr><td>Realizar depósito</td><td><code>ms-pagos</code> → transacción → evento <code>transacciones</code> → <code>ms-cuentas</code> actualiza saldo.</td></tr>
+    <tr><td>Migrar datos legacy</td><td><code>banco-batch</code> → lee CSV → limpia → MySQL.</td></tr>
+  </table>
+
+  <!-- ================= 8. INTEGRACIÓN ================= -->
+  <h2 class="sec" id="integracion">8. Integración entre componentes</h2>
+  <ul>
+    <li><b>Síncrona:</b> BFF → API Gateway (HTTP + JWT) → microservicios. El Gateway resuelve los nombres lógicos (<code>lb://ms-*</code>) mediante Eureka.</li>
+    <li><b>Asíncrona (Kafka):</b> eventos <code>clientes</code>, <code>retiros</code>, <code>transacciones</code>, <code>autenticaciones</code>. <code>ms-cuentas</code> actualiza saldos consumiendo <code>transacciones</code> (consistencia eventual).</li>
+    <li><b>Seguridad:</b> <code>auth-server</code> emite JWT; microservicios y BFFs son <i>resource servers</i> que validan el token vía JWK Set.</li>
+    <li><b>Configuración:</b> los microservicios importan config desde <code>config-server</code>.</li>
+  </ul>
+
+  <!-- ================= 9. SEGURIDAD ================= -->
+  <h2 class="sec" id="seguridad">9. Seguridad</h2>
+  <ul>
+    <li><b>Autenticación:</b> OAuth 2.0 (client credentials) por canal (<code>bff-web-client</code>, <code>bff-mobile-client</code>, <code>bff-atm-client</code>).</li>
+    <li><b>Autorización:</b> roles <code>ROLE_WEB</code>, <code>ROLE_MOBILE</code>, <code>ROLE_ATM</code>. Reglas finas (retiro → <code>ROLE_ATM</code>; alta de cliente → <code>ROLE_WEB</code>).</li>
+    <li><b>Transporte:</b> HTTPS en los BFF (certificado autofirmado en desarrollo; ACM en AWS).</li>
+    <li><b>Control de acceso:</b> <code>401</code> sin token, <code>403</code> sin permiso.</li>
+  </ul>
+
+  <!-- ================= 10. RESILIENCIA ================= -->
+  <h2 class="sec" id="resiliencia">10. Resiliencia y mensajería</h2>
+  <p><b>Resilience4j</b> (en los BFFs, como consumidores): Circuit Breaker (<code>backendCore</code>), Retry y Fallback. Ante la caída de <code>ms-cuentas</code>, el BFF responde con un <i>fallback</i> controlado sin romper el canal.</p>
+  <p><b>Kafka:</b> productores en <code>auth-server</code>, <code>ms-clientes</code>, <code>ms-cuentas</code> y <code>ms-pagos</code>; consumidores en <code>notificaciones-service</code> y <code>ms-cuentas</code>.</p>
+  <div class="mermaid">
+sequenceDiagram
+    participant ATM as BFF ATM
+    participant CU as ms-cuentas
+    participant K as Kafka (retiros)
+    participant NT as notificaciones
+    ATM->>CU: POST /api/cuentas/101/retiros (JWT ATM)
+    CU-->>CU: valida saldo y descuenta
+    CU->>K: publica RetiroEvent
+    K-->>NT: evento entregado
+    NT-->>NT: procesa y notifica
+    ATM<<--CU: RetiroResultDTO (APROBADO)
+  </div>
+
+  <!-- ================= 11. DESPLIEGUE ================= -->
+  <h2 class="sec" id="despliegue">11. Despliegue (Docker y nube)</h2>
+  <p>Un único <code>docker-compose.yml</code> orquesta MySQL, Kafka/Zookeeper, Kafka UI, Config Server, Eureka, Gateway, Auth Server, los 3 microservicios, el batch, los 3 BFF y notificaciones (<b>13 servicios</b>). Cada microservicio tiene su <code>Dockerfile</code> multi-etapa (Maven 3.9 + JRE 21).</p>
+  <div class="mermaid">
+flowchart TB
+    COMPOSE[docker-compose.yml] --> MYSQL[mysql:8.4]
+    COMPOSE --> ZK[zookeeper]
+    COMPOSE --> KF[kafka]
+    COMPOSE --> KUI[kafka-ui]
+    COMPOSE --> CFG[config-server]
+    COMPOSE --> EUR[eureka-server]
+    COMPOSE --> GW[api-gateway]
+    COMPOSE --> AUTH[auth-server]
+    COMPOSE --> MS1[ms-clientes]
+    COMPOSE --> MS2[ms-cuentas]
+    COMPOSE --> MS3[ms-pagos]
+    COMPOSE --> BATCH[banco-batch]
+    COMPOSE --> B1[bff-web]
+    COMPOSE --> B2[bff-mobile]
+    COMPOSE --> B3[bff-atm]
+    COMPOSE --> NOTI[notificaciones-service]
+  </div>
+  <p>Para AWS: ECR + ECS (Fargate) + RDS MySQL + ALB + ACM + Secrets Manager (+ MSK para Kafka). Ver <a href="despliegue.md">despliegue.md</a>.</p>
+
+  <!-- ================= 12. RESULTADOS ================= -->
+  <h2 class="sec" id="resultados">12. Resultados</h2>
+  <ul>
+    <li>Los 3 procesos batch se ejecutan (<code>estado: COMPLETED</code>) con normalización de los 4 formatos de fecha y retry/skip; los inválidos quedan registrados como anomalías.</li>
+    <li>Los 3 BFFs autentican por canal y sirven respuestas adaptadas (Web detallado 4,5 KB / Móvil ligero 3,15 KB / ATM saldo 431 B).</li>
+    <li>Los 3 microservicios se registran en Eureka y son accesibles vía Gateway.</li>
+    <li>Verificación de <code>401</code>/<code>403</code> y <i>fallback</i> de Resilience4j.</li>
+    <li>Eventos reproducidos productor → consumidor en Kafka (UI + consola).</li>
+  </ul>
+
+  <!-- ================= 13. COMPARACIÓN ================= -->
+  <h2 class="sec" id="comparacion">13. Comparación con el sistema legacy</h2>
+  <table class="datos">
+    <tr><th>Aspecto</th><th>Legacy (COBOL + Shell)</th><th>Nuevo sistema (Spring Cloud)</th></tr>
+    <tr><td>Arquitectura</td><td>Monolítica (mainframe)</td><td>Microservicios desacoplados</td></tr>
+    <tr><td>Escalabilidad</td><td>Limitada</td><td>Horizontal (Docker, Eureka, ALB)</td></tr>
+    <tr><td>Tolerancia a fallos</td><td>Frágil</td><td>Resilience4j + reinicio de contenedores</td></tr>
+    <tr><td>Procesos batch</td><td>Scripts manuales; descartan fechas no ISO</td><td>Spring Batch (4 formatos, retry/skip, paralelismo, re-ejecución)</td></tr>
+    <tr><td>Frontends</td><td>Monolito único</td><td>BFF por canal</td></tr>
+    <tr><td>Seguridad</td><td>Centralizada y limitada</td><td>OAuth 2.0 distribuido + HTTPS</td></tr>
+    <tr><td>Integración</td><td>Acoplada</td><td>Eventos Kafka (desacoplamiento)</td></tr>
+  </table>
+
+  <!-- ================= 14. DESAFÍOS ================= -->
+  <h2 class="sec" id="desafios">14. Desafíos y soluciones</h2>
+  <table class="datos">
+    <tr><th>Desafío</th><th>Solución</th></tr>
+    <tr><td>Datos legacy sucios (negativos, fechas, nulos, duplicados)</td><td>Validación/normalización en <code>ItemProcessor</code> + retry/skip + deduplicación en BD.</td></tr>
+    <tr><td>Fechas multi-formato descartadas por el legacy</td><td>Parser de 4 formatos (<code>ParseoUtil.parseFecha</code>).</td></tr>
+    <tr><td>Anti-patrón de procesadores con estado</td><td>Procesadores <i>stateless</i>; dedup por clave única.</td></tr>
+    <tr><td>Consistencia distribuida</td><td>Eventos Kafka (consistencia eventual).</td></tr>
+    <tr><td>Fallos de servicios externos</td><td>Resilience4j (Circuit Breaker/Retry/Fallback).</td></tr>
+    <tr><td>Seguridad distribuida</td><td>OAuth 2.0 + autorización por canal.</td></tr>
+  </table>
+
+  <!-- ================= 15. MEJORAS ================= -->
+  <h2 class="sec" id="mejoras">15. Propuestas de mejora y próximos pasos</h2>
+  <ul>
+    <li>Observabilidad: OpenTelemetry + trazabilidad distribuida (tracing) entre microservicios y BFFs.</li>
+    <li>Contratos por canal versionados (evolución de DTOs de cada BFF).</li>
+    <li>CI/CD: GitHub Actions (build → tests → ECR → ECS).</li>
+    <li>Seguridad: rotación de claves JWT, mTLS, secretos en Secrets Manager.</li>
+    <li>Patrón Saga (coreografía) para transacciones distribuidas con compensación.</li>
+    <li>BD por servicio (esquemas/BBDD independientes por microservicio).</li>
+    <li>Kafka en AWS (MSK o EC2) con los microservicios apuntando al broker remoto.</li>
+  </ul>
+
+  <hr>
+  <p style="text-align:center;color:#777;font-size:12px">Informe técnico EFT — Backend III (PBY2203) · Duoc UC. Documento generado a partir del documento <code>PB Y2203_EFT_Plantilla_Informe_PDF</code> (estructura adaptada).</p>
+</div>
+</body>
+</html>
