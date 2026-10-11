@@ -1,5 +1,7 @@
 # Evaluación del proyecto contra la Pauta de la EFT (Paso 2) y correcciones aplicadas (Paso 3)
 
+> **Nota de alcance:** el despliegue en la nube (<i>criterio 6</i>) quedó **fuera de esta evaluación** por decisión del docente, debido a las limitaciones del laboratorio AWS Academy. El sistema fue validado y consolidado en **local (Docker)**, y los pasos de despliegue se entregan como documento (<code>despliegue.md</code>, exigido por el criterio 7).
+
 Evaluación realizada **como profesor de ingeniería de software** sobre el proyecto `Banco_XYZ_EFT`, siguiendo los 7 criterios de la Pauta de Evaluación Final Transversal (columna "Completamente Logrado 100%").
 
 ---
@@ -62,12 +64,13 @@ Diagramas en `informe_tecnico.html` (mermaid: arquitectura, componentes, casos d
 
 ### Criterio 6 — Docker y escalabilidad horizontal para el despliegue en la nube (10 pts)
 
+> ➖ **Fuera de evaluación** (decisión del docente — AWS Academy). Se entrega igualmente el material:
+
 - `Dockerfile` multi-etapa por cada uno de los 12 servicios.
 - `docker-compose.yml` único (13 servicios + MySQL + Kafka + Kafka UI), con healthchecks y `depends_on`.
-- `despliegue.md`: AWS (ECR, ECS/Fargate, RDS, ALB, ACM, Secrets Manager, MSK) + Auto Scaling.
-- PBS: 3 microservicios listos para replicar (`docker compose up --scale`), Eureka/Gateway balancean.
-
-**Evaluación:** cumple (10/10). *Aspecto a reforzar:* validar ejecución real en AWS (laboratorio) — ver Paso 3 S3.
+- `despliegue.md`: AWS (ECR, ECS/Fargate, RDS, ALB, ACM, Secrets Manager, MSK) + Auto Scaling + guía de Kafka en EC2.
+- PBS: 3 microservicios listos para replicar (`docker compose up --scale`), con Eureka/Gateway para balanceo.
+- **Validación en local:** stack completo levantado con `docker compose` y servicios verificados.
 
 ### Criterio 7 — Documenta los 4 aspectos claves (10 pts)
 
@@ -90,9 +93,9 @@ Diagramas en `informe_tecnico.html` (mermaid: arquitectura, componentes, casos d
 | 3 | Procesos batch | 15 | ✅ Cumple |
 | 4 | Patrón BFF | 15 | ✅ Cumple |
 | 5 | Microservicios + Spring Cloud + Kafka | 15 | ✅ Cumple |
-| 6 | Docker + escalabilidad en la nube | 10 | ✅ (AWS pendiente de validar) |
+| 6 | Docker + escalabilidad en la nube | 10 | ➖ Fuera de evaluación (decisión docente; entregado como documento) |
 | 7 | Documentación | 10 | ✅ Cumple |
-| **Total** | | **100** | |
+| **Total** | | **100** | **90 en evaluación** |
 
 ---
 

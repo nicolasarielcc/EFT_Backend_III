@@ -12,6 +12,8 @@ Evaluación Final Transversal — Semana 9.
 
 ## Tabla de contenidos
 
+> **Nota de alcance:** el despliegue real en la nube (criterio 6 de la pauta) quedó **fuera de la evaluación** por decisión del docente (AWS Academy). El proyecto se consolidó y validó en **local con Docker Compose**; los pasos de despliegue en AWS se entregan documentados en [`despliegue.md`](despliegue.md).
+
 1. [Resumen ejecutivo](#1-resumen-ejecutivo)
 2. [Objetivo](#2-objetivo)
 3. [Alcance](#3-alcance)

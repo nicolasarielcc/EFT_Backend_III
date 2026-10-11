@@ -1,5 +1,7 @@
 # Pasos para desplegar el sistema en la nube (AWS) — Banco XYZ (EFT)
 
+> **Nota de alcance:** el despliegue real en la nube quedó **fuera de la evaluación** por decisión del docente (limitaciones del laboratorio AWS Academy). El sistema se validó y consolidó en **local con Docker Compose**. Este documento describe el procedimiento documentado (entregable del criterio 7) y queda **listo para ejecutarse** cuando el entorno de nube esté disponible.
+
 Este documento explica el proceso para desplegar la solución (desarrollada localmente con Docker Compose) en un entorno de nube **AWS**, manteniendo la misma configuración e imágenes Docker y habilitando **escalabilidad horizontal**.
 
 ---
