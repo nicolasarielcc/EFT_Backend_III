@@ -5,6 +5,7 @@
 > **Fecha:** 09/10/2026
 > **Profesor:** Alonso Castillo
 > **Curso:** Backend III (PBY2203)
+> **Código fuente (repositorio):** https://github.com/nicolasarielcc/EFT_Backend_III
 
 Evaluación Final Transversal — Semana 9.
 
@@ -13,6 +14,8 @@ Evaluación Final Transversal — Semana 9.
 ## Tabla de contenidos
 
 > **Nota de alcance:** el despliegue real en la nube (criterio 6 de la pauta) quedó **fuera de la evaluación** por decisión del docente (AWS Academy). El proyecto se consolidó y validó en **local con Docker Compose**; los pasos de despliegue en AWS se entregan documentados en [`despliegue.md`](despliegue.md).
+
+0. [Código fuente y repositorio](#0-código-fuente-y-repositorio)
 
 1. [Resumen ejecutivo](#1-resumen-ejecutivo)
 2. [Objetivo](#2-objetivo)
@@ -28,6 +31,20 @@ Evaluación Final Transversal — Semana 9.
 12. [Pruebas de cada componente](#12-pruebas-de-cada-componente)
 13. [Comparación con el sistema legacy](#13-comparación-con-el-sistema-legacy)
 14. [Desafíos y soluciones](#14-desafíos-y-soluciones)
+
+---
+
+## 0. Código fuente y repositorio
+
+- **Repositorio GitHub (código fuente completo):** https://github.com/nicolasarielcc/EFT_Backend_III
+- El proyecto es un **multi-módulo Maven** (12 servicios + librería común) organizado y documentado; la propuesta técnica, la arquitectura y las instrucciones de ejecución están en este `readme.md` y en el informe técnico.
+- Componentes de la entrega (todos en esta misma carpeta):
+  - `readme.md` — este documento (objetivo, arquitectura, estructura, ejecución).
+  - `informe_tecnico.pdf` (+ `.html`/.`md`) — informe técnico con diagramas.
+  - `instrucciones.md` — cómo ejecutar y probar cada componente.
+  - `despliegue.md` — pasos de despliegue en la nube (documentado; fuera de evaluación por AWS Academy).
+  - `postman/Banco_XYZ_EFT.postman_collection.json` — colección de pruebas.
+  - `presentacion.html` y `guion_video.md` — presentación y guión del video.
 
 ---
 
